@@ -1,6 +1,7 @@
 #include <GameEngine.h>
 #include <Location.h>
 #include <Gemini.h>
+#include <NPC.h>
 
 
 Location::Location(int rank, const string &themeName): rank(rank), themeName(themeName)
@@ -17,9 +18,9 @@ Location::Location(int rank, const string &themeName): rank(rank), themeName(the
         this->desc = "No description available.";
     }
 
-    // // setLocInMap();
+    // setLocInMap();
 
-    // //parse npcs
+    //parse npcs
 
     // for(const auto& npcData : LocResp["npcs"])
     // {
@@ -30,17 +31,23 @@ Location::Location(int rank, const string &themeName): rank(rank), themeName(the
     //     NPC* newNPC = new NPC(npcRank, npcName, npcDesc);  
     //     addNPC(newNPC);
     // }
+
+    for (int i=1; i<=1; i++){
+        NPC* newNPC = new NPC(i, *this);
+        addNPC(newNPC);
+    }
 }
 
 
 Location::Location(int rank,const string &name, const string &themeName): rank(rank), name(name), themeName(themeName)
 {
-    // json LocResp= Gemini::genLocationByGemini(rank,name);
-    // desc=LocResp["description"];
+    future<json> final = Gemini().genLocationByGemini(rank, name, themeName);
+    json LocResp = final.get();
+    desc=LocResp["location"]["description"];
 
-    // // setLocInMap();
+    // setLocInMap();
 
-    // //parse npcs
+    //parse npcs
 
     // for(const auto& npcData : LocResp["npcs"])
     // {
@@ -51,6 +58,11 @@ Location::Location(int rank,const string &name, const string &themeName): rank(r
     //     NPC* newNPC = new NPC(npcRank, npcName, npcDesc);  
     //     addNPC(newNPC);
     // }
+
+    for (int i=1; i<=1; i++){
+        NPC* newNPC = new NPC(i, *this);
+        addNPC(newNPC);
+    }
 }
 
 Location::Location(int rank,const string &name, const string &desc, const string &themeName):rank(rank),name(name),
