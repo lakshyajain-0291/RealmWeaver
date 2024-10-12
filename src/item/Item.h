@@ -17,7 +17,7 @@ class Item
 
     public:
         // Constructor
-        Item(const int rank);                                                                 //Fetched from db
+        Item(const int rank, const string& themeName);                                                                 //Fetched from db
         Item( const int& rank,const string& name, const string& description,Stats *itemStats);  //Newly generated from the gemini
 
         // Getters
