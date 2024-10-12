@@ -436,3 +436,35 @@ static future<vector<json>> genMutlipleLocations(const vector<int>& rank, const 
         return locations;
     });
 }
+
+
+future<json> Gemini::genItem(int rank, const string &themeName)
+{
+    return async(launch::async, [this, rank, themeName]()
+    {
+        // Default response in case the API call fails or response is invalid
+        json defaultResp = {
+            { "item", {
+                 {"name", "Unknown Item"}, 
+                 {"description", "An item of mysterious origin."},
+                 {"rank", rank}
+            } }
+        };
+
+        // Prepare the prompt for the API request
+        string prompt = 
+            "Generate an item for a " + themeName + "-themed game. "
+            "The item should be suitable for rank " + std::to_string(rank) + "/10 (" + GameEngine().getRankName(rank) + "). "
+            "Provide a detailed description of the item, its properties, and how it can be used.";
+
+        cout << prompt; // Optional: Print the prompt for debugging
+
+        // Send request to Gemini API
+        json jsonResp = this->sendGeminiReq("../json/item.json", prompt);
+
+        // Ensure response is valid or fallback to default
+        json final = isRespCorrect(jsonResp, defaultResp);
+        cout << final; // Optional: Print the final JSON response for debugging
+        return final;
+    });
+}
