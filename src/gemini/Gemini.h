@@ -25,10 +25,10 @@ class Gemini
         future<json> genNPC(const int &rank,const string &LocName, const string &LocDesc);
         future<json> genNPCStats(const int& rank, const string &npcName, const string &npcBackStory);
         future<json> genQuests(const int &rank,const string &name,const string &backStory);
-        future<json> genLocationByGemini(const int &rank);
-        future<json> genLocationByGemini(const int &rank,const string &name);
+        future<json> genLocationByGemini(const int &rank, const string &themeName);
+        future<json> genLocationByGemini(const int &rank, const string &name,const string &themeName);
 
         future<json> genItem(int rank);
 
-        static future<vector<json>> genMutlipleLocations(const vector<int>& rank);
+        static future<vector<json>> genMutlipleLocations(const vector<int>& rank, const string &themeName);
 };

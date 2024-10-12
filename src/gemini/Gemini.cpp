@@ -354,3 +354,85 @@ future<json> Gemini::genQuests(const int &rank, const string &npcName, const str
     });
 }
 
+future<json> Gemini::genLocationByGemini(const int &rank, const string &themeName)
+{
+    return async(launch::async, [this, rank, themeName]()
+    {
+        // Default response in case of failure
+        json defaultResp = {
+            { "location", {
+                {"name", "Unknown Territory"},
+                {"description", "An uncharted and mysterious area with no known history."}
+            } }
+        };
+
+        // Construct the prompt
+        string prompt = 
+            "Generate a location for a " + themeName + "-themed game. "
+            "The location should be suitable for a setting with a rank of " + std::to_string(rank) + "/10 "
+            "(" + GameEngine().getRankName(rank) + "). "
+            "Provide a name and a detailed description of the location, taking the theme into account.";
+
+        // Send request to Gemini API
+        json jsonResp = this->sendGeminiReq("../json/location.json", prompt);
+        cout << jsonResp;
+
+        // Validate the response, fallback to the default response if necessary
+        json final = isRespCorrect(jsonResp, defaultResp);
+        cout << final;
+
+        return final;
+    });
+}
+
+future<json> Gemini::genLocationByGemini(const int &rank, const string &name, const string &themeName)
+{
+    return async(launch::async, [this, rank, name, themeName]()
+    {
+        // Default response in case the API call fails or response is invalid
+        json defaultResp = {
+            { "location", {
+                 {"name", "Unknown Location"}, 
+                 {"description", "A mysterious place with unknown features."}
+            } }
+        };
+
+        // Prepare the prompt for the API request
+        string prompt = 
+            "Generate a location for a " + themeName + "-themed game. "
+            "The location should be named '" + name + "' and suitable for rank " + std::to_string(rank) + "/10 (" + GameEngine().getRankName(rank) + "). "
+            "Provide a description of the location and any notable features.";
+
+        // cout << prompt; // Optional: Print the prompt for debugging
+
+        // Send request to Gemini API
+        json jsonResp = this->sendGeminiReq("../json/location.json", prompt);
+
+        // Ensure response is valid or fallback to default
+        json final = isRespCorrect(jsonResp, defaultResp);
+        cout << final; // Optional: Print the final JSON response for debugging
+
+        return final;
+    });
+}
+
+
+static future<vector<json>> genMutlipleLocations(const vector<int>& rank, const string &themeName){
+    return async(launch::async, [rank, themeName]()
+    {
+        vector<future<json>> futures;
+        vector<json> locations;
+
+        for (const auto& r : rank) 
+        {
+            futures.push_back(Gemini().genLocationByGemini(r, themeName));
+        }
+
+        for (auto& f : futures) 
+        {
+            locations.push_back(f.get());
+        }
+
+        return locations;
+    });
+}
