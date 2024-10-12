@@ -8,6 +8,7 @@ class Location
 private:
     string name;
     string desc;
+    string themeName;
     int rank;
     vector<NPC*> npcsPresent;
     unordered_map<Location*,int> paths;
@@ -17,13 +18,14 @@ private:
     // void setLocInMap();
 
 public:
-    Location(int rank);
-    Location(int rank,const string &name);
-    Location(int rank,const string &name, const string &desc);
+    Location(int rank, const string &themeName);
+    Location(int rank,const string &name, const string &themeName);
+    Location(int rank,const string &name, const string &desc, const string &themeName);
 
     //getters
     string getName() const;
     string getDesc() const;
+    string getthemeName() const;
     vector<NPC*> getNPCs() const;
     unordered_map<Location*,int> getPaths() const;
 
