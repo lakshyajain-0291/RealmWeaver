@@ -14,28 +14,17 @@ int main()
 {
     // cout<<"MAIN FILE RUNNING\n\n";
 
-    string locName,locDesc;
     int rank;
 
-    do 
-    {
-
-        cout << "Enter the locName: ";
-        getline(cin, locName);
-        
-        cout << "Enter the locDesc: ";
-        getline(cin, locDesc);
-        // locName ="Volcanic Crater";
-        // locDesc = "A searing hot pit at the heart of a dormant volcano, filled with molten lava and dangerous creatures.";
-        cout << "Enter the Rank: ";
-        cin>>rank;
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the input buffer
-
-        Location loc(rank,locName,locDesc);
-        NPC npc(rank,loc);
-        
-    } while(rank!=-1);
+    cout << "Enter the Rank: ";
+    cin>>rank;
     
+    // currently generating 1 NPC for location
+    Location loc(rank, theme);
+    cout << endl;
+    cout << endl;
+    cout << "Location Name: " << loc.getName() << endl;
+    cout << "Location Description: " << loc.getDesc() << endl;
     
     return 0;
 }
