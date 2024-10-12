@@ -3,7 +3,7 @@
 #include <Gemini.h>
 
 
-Location::Location(int rank): rank(rank)
+Location::Location(int rank, const string &themeName): rank(rank), themeName(themeName)
 {
     name = "";
     desc = "";
@@ -27,7 +27,7 @@ Location::Location(int rank): rank(rank)
 }
 
 
-Location::Location(int rank,const string &name): rank(rank), name(name)
+Location::Location(int rank,const string &name, const string &themeName): rank(rank), name(name), themeName(themeName)
 {
     // json LocResp= Gemini::genLocationByGemini(rank,name);
     // desc=LocResp["description"];
@@ -47,7 +47,8 @@ Location::Location(int rank,const string &name): rank(rank), name(name)
     // }
 }
 
-Location::Location(int rank,const string &name, const string &desc):rank(rank),name(name),desc(desc){}
+Location::Location(int rank,const string &name, const string &desc, const string &themeName):rank(rank),name(name),
+                        desc(desc),themeName(themeName){}
 
 // void setLocInMap();//complete this to add location into the world map according to gemini;
 
@@ -59,6 +60,11 @@ string Location::getName() const
 string Location::getDesc() const
 {
     return desc;
+}
+
+string Location::getthemeName() const
+{
+    return themeName;
 }
 
 vector<NPC*> Location::getNPCs() const
