@@ -5,11 +5,17 @@
 
 Location::Location(int rank, const string &themeName): rank(rank), themeName(themeName)
 {
-    name = "";
-    desc = "";
-    // json LocResp= Gemini::genLocationByGemini(rank);
-    // name=LocResp["name"];
-    // desc=LocResp["description"];
+    future<json> LocResp= Gemini().genLocationByGemini(rank, themeName);
+    json resp = LocResp.get();
+    
+    if (resp.contains("location")) {
+        this->name = resp["location"]["name"];
+        this->desc = resp["location"]["description"];
+    } else {
+        // Handle the case where "location" is not present
+        this->name = "Unknown";
+        this->desc = "No description available.";
+    }
 
     // // setLocInMap();
 
