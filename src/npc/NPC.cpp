@@ -108,6 +108,38 @@ std::string NPC::getBackStory() const {
     return backStory;
 }
 
+
+std::string NPC::getLocName() const {
+    return (*loc).getName();
+}
+
+std::string NPC::getLocDesc() const {
+    return (*loc).getDesc();
+}
+
+std::string NPC::getLocthemeName() const {
+    return (*loc).getthemeName();
+}
+
+int NPC::getQuestId() const {
+    if (!quests.empty())
+    return quests.front()->getId();
+    else return -1;
+}
+
+std::string NPC:: getQuestName() const {
+    if (!quests.empty())
+    return quests.front()->getName();
+    else return "";
+}
+
+std::string NPC:: getQuestDescription() const{
+    if (!quests.empty())
+    return quests.front()->getDescription();
+    else return "";
+}
+
+
 // Get the NPC's stats
 Stats* NPC::getStats() const {
     return stats;
