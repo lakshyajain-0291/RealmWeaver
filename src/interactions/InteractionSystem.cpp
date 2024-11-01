@@ -52,19 +52,20 @@ std::string InteractionManager::getQuestDetails() const {
 std::string InteractionManager::generateScorePrompt() const {
     std::string prompt = "Based on previous dialogues, generate a score as an integer (-3 to +3) for interaction relevance.\n";
     prompt += "Example:\n";
-    prompt += "- If NPC response matches player's query well, score = 2.\n";
-    prompt += "- If response is generic or neutral, score = 1.\n";
-    prompt += "- If response shows frustration, score = -2.\n";
+    prompt += "- If NPC response matches player's query well, score = 8.\n";
+    prompt += "- If response is generic or neutral, score = 6.\n";
+    prompt += "- If response shows frustration, score = -4.\n";
     prompt += "Previous dialogue: \n";
     for (const auto& dialogue : conversationHistory) {
         prompt += "- " + dialogue + "\n";
     }
+    prompt += "Note that you must give output only a single intiger denoting the score.\n";
     return prompt;
 }
 
 // Progress the dialogue
 void InteractionManager::progressDialogue() {
-    if (dialogueCount >= 5 || totalScore <= 0) {
+    if (dialogueCount >= 15 || totalScore <= 0) {
         std::cout << "The NPC denies your quest." << std::endl;
         endInteraction();
         return;
@@ -82,11 +83,16 @@ void InteractionManager::progressDialogue() {
     // Display the response
     std::cout << "NPC Response: " << response << std::endl;
 
+    std::string user_response;
+    getline(std::cin, user_response);
+    conversationHistory.push_back(user_response);
+
     // Generate prompt and get score response
     std::string scorePrompt = generateScorePrompt();
     std::string scoreResponse = Gemini().query(scorePrompt);
 
     // Convert response to integer score (assume valid response)
+    std::cout << "Score response: " << scoreResponse << std::endl;
     int deltaScore = std::stoi(scoreResponse);
 
     // Update score and check for conditions
