@@ -11,7 +11,6 @@ const std::string theme = []() {
     return input;
 }();
 
-
 void testInteraction() {
     // Create a player
     Player player("Hero", 5);  // Name, level
@@ -21,36 +20,33 @@ void testInteraction() {
     NPC npc = *(loc.getNPCs()[0]);
     
     // Create the InteractionManager
-    InteractionManager IM(player, npc);
+    InteractionManager interactionManager(player, npc);
 
     // Start the interaction
-    IM.startInteraction();
+    interactionManager.startInteraction();
 
     // Test displaying the initial dialogue
-    // std::string expectedInitialDialogue = "Welcome to the castle, Hero. How can I assist you today?";
-    // assert(interactionManager.getCurrentDialogueText() == expectedInitialDialogue);
-    
+    // std::string expectedInitialDialogue = "Hello, traveler! What brings you to Hogwarts?";
+    // assert(interactionManager.getTotalScore() == 10); // Check initial score
+    // std::cout << "Initial Dialogue: " << expectedInitialDialogue << std::endl;
+
     // Simulate progression of the dialogue
-    IM.progressDialogue();  // Simulate player selecting the next option
+    interactionManager.progressDialogue();  // Simulate player selecting the next option
 
     // Check that the response is generated based on the NPC context
-    // std::string geminiResponse = interactionManager.getLastResponse();
-    // assert(!geminiResponse.empty());  // Ensure we received a response
+    // std::string geminiResponse = "Your journey is a noble one."; // Simulated response for test
+    interactionManager.progressDialogue();  // Progress dialogue
 
-    // Test score updating
-    // int initialScore = interactionManager.getTotalScore();
-    // interactionManager.progressDialogue();  // Advance dialogue to check score
-    // int newScore = interactionManager.getTotalScore();
-    // assert(newScore > initialScore);  // Ensure score has increased
+    // Assuming a mock function or a set score for this response
+    assert(interactionManager.getTotalScore() > 10);  // Ensure score has increased
+
+    // Check final score after interaction
+    int finalScore = interactionManager.getTotalScore();
+    std::cout << "Final score: " << finalScore << std::endl;
 
     // End the interaction
-    IM.endInteraction();
-    
-    // Final score verification
-    // int finalScore = interactionManager.getTotalScore();
-    // std::cout << "Final score: " << finalScore << std::endl;
+    interactionManager.endInteraction();
 }
-
 
 int main()
 {
