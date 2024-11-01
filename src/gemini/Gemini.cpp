@@ -468,3 +468,48 @@ future<json> Gemini::genItem(int rank, const string &themeName)
         return final;
     });
 }
+
+std::string Gemini::query(const std::string& prompt) {
+    try {
+        // Assuming sendGeminiReq returns JSON data directly
+        json jsonResponse = sendGeminiReq(prompt);
+
+        // Check if the data contains the expected structure
+        if (jsonResponse.contains("candidates") && 
+            jsonResponse["candidates"][0]["content"].contains("parts")) {
+            return jsonResponse["candidates"][0]["content"]["parts"][0]["text"];
+        } else {
+            return "Error: Expected structure not found in response.";
+        }
+
+    } catch (const json::parse_error& e) {
+        std::cerr << "Parse error: " << e.what() << std::endl;
+        return "Error: Unable to parse JSON response.";
+    } catch (const std::exception& e) {
+        std::cerr << "Error extracting response from Gemini: " << e.what() << std::endl;
+        return "Error: Unable to generate response.";
+    }
+}
+
+
+std::string Gemini::getResponse(const std::vector<std::string>& dialogueHistory, const std::string& npcName, 
+                                 const std::string& npcRank, const std::string& npcBackStory, 
+                                 const std::string& locName, const std::string& locDesc, 
+                                 const std::string& themeName, const std::string& questDetails) {
+    std::string prompt = "You are interacting with an NPC with the following context:\n\n";
+    prompt += "NPC Details:\n";
+    prompt += "Name: " + npcName + "\n";
+    prompt += "Rank: " + npcRank + "\n";
+    prompt += "Backstory: " + npcBackStory + "\n\n";
+    prompt += "Location:\n";
+    prompt += "Name: " + locName + "\n";
+    prompt += "Description: " + locDesc + "\n";
+    prompt += "Theme: " + themeName + "\n\n";
+    prompt += questDetails + "\n"; // Include quest details
+    prompt += "Conversation History:\n";
+    for (const auto& dialogue : dialogueHistory) {
+        prompt += "- " + dialogue + "\n";
+    }
+    prompt += "\nGenerate a response that respects the NPC's backstory, location, and quest context.";
+    return query(prompt);
+}

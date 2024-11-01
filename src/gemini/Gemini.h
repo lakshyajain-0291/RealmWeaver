@@ -31,4 +31,11 @@ class Gemini
         future<json> genItem(int rank, const string &themeName);
 
         static future<vector<json>> genMutlipleLocations(const vector<int>& rank, const string &themeName);
+
+        std::string query(const std::string& prompt);
+
+        std::string getResponse(const std::vector<std::string>& dialogueHistory, const std::string& npcName, 
+                                 const std::string& npcRank, const std::string& npcBackStory, 
+                                 const std::string& locName, const std::string& locDesc, 
+                                 const std::string& themeName, const std::string& questDetails);   
 };
