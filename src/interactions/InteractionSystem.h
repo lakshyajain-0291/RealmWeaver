@@ -42,6 +42,10 @@ public:
     int getTotalScore() const;  // Returns total score for testing purposes
 
 private:
+    int initial_score = 5;
+    int req_score = 15;
+    int max_dialogues = 7;
+    
     Player& player;                // Reference to the player object
     NPC& npc;                      // Reference to the NPC object
     DialogueNode* currentNode;     // Current dialogue node in the interaction

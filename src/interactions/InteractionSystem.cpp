@@ -24,7 +24,7 @@ void DialogueNode::updateScore(int deltaScore) {
 
 // Constructor for InteractionManager
 InteractionManager::InteractionManager(Player& player, NPC& npc)
-    : player(player), npc(npc), currentNode(nullptr), totalScore(10), dialogueCount(0) {}
+    : player(player), npc(npc), currentNode(nullptr), totalScore(initial_score), dialogueCount(0) {}
 
 // Start the interaction
 void InteractionManager::startInteraction() {
@@ -34,12 +34,32 @@ void InteractionManager::startInteraction() {
     // Initialize the first dialogue node (example)
     currentNode = new DialogueNode("Hello, traveler! What brings you to " + npc.getLocName() + "?");
     displayDialogue();
+
+    std::string user_response;
+    std::cout << "User: ";
+    std::getline(std::cin, user_response);
+    std::cout << std::endl;
+    conversationHistory.push_back(user_response);
+
+    // Generate prompt and get score response
+    std::string scorePrompt = generateScorePrompt();
+    std::string scoreResponse = Gemini().query(scorePrompt);
+
+    // Convert response to integer score (assume valid response)
+    // std::cout << "Score response: " << scoreResponse << std::endl;
+    int deltaScore = std::stoi(scoreResponse);
+
+    // Update score and check for conditions
+    updateScore(deltaScore);
+    dialogueCount++;
+
+    progressDialogue();
 }
 
 // Display the current dialogue
 void InteractionManager::displayDialogue() const {
     if (currentNode) {
-        std::cout << currentNode->getText() << std::endl;
+        std::cout << npc.getName() << ": " << currentNode->getText() << std::endl;
     }
 }
 
@@ -50,11 +70,11 @@ std::string InteractionManager::getQuestDetails() const {
 
 // Generate prompt for score calculation with examples
 std::string InteractionManager::generateScorePrompt() const {
-    std::string prompt = "Based on previous dialogues, generate a score as an integer (-40 to +100) for interaction relevance.\n";
+    std::string prompt = "Based on previous dialogues, generate a score as an integer (-4 to +6) for interaction relevance.\n";
     prompt += "Example:\n";
-    prompt += "- If NPC response matches player's query well, score = 80.\n";
-    prompt += "- If response is generic or neutral, score = 60.\n";
-    prompt += "- If response shows frustration, score = 0.\n";
+    prompt += "- If NPC response matches player's query well, score = 5.\n";
+    prompt += "- If response is generic or neutral, score = 3.\n";
+    prompt += "- If response shows frustration, score = -3.\n";
     prompt += "Previous dialogue: \n";
     for (const auto& dialogue : conversationHistory) {
         prompt += "- " + dialogue + "\n";
@@ -65,60 +85,63 @@ std::string InteractionManager::generateScorePrompt() const {
 
 // Progress the dialogue
 void InteractionManager::progressDialogue() {
-    if (dialogueCount >= 15 || totalScore <= 0) {
-        std::cout << "The NPC denies your quest." << std::endl;
-        endInteraction();
-        return;
-    }
+    while(totalScore < req_score){
 
-    std::string response;
-    // Use Gemini::getResponse to generate response based on NPC context
-    try{
-        future<json> futureResp = Gemini().getResponse(
-            conversationHistory, npc.getName(), std::to_string(npc.getRank()), npc.getBackStory(),
-            npc.getLocName(), npc.getLocDesc(), npc.getLocthemeName(), npc.getQuestName(),
-            npc.getQuestDescription(), npc.getQuestTask());
-
-        json resp = futureResp.get();
-        // std::cout << "Response from Gemini: " << resp << std::endl;
-        response = resp["response"];
-    } catch (const std::exception& e) {
-        response = "I'm sorry, I didn't hear you!";
-        return;
-    }
-
-    // Add response to conversation history
-    conversationHistory.push_back(response);
-
-    // Display the response
-    std::cout << "NPC Response: " << response << std::endl;
-
-    std::string user_response;
-    getline(std::cin, user_response);
-    conversationHistory.push_back(user_response);
-
-    // Generate prompt and get score response
-    std::string scorePrompt = generateScorePrompt();
-    std::string scoreResponse = Gemini().query(scorePrompt);
-
-    // Convert response to integer score (assume valid response)
-    std::cout << "Score response: " << scoreResponse << std::endl;
-    int deltaScore = std::stoi(scoreResponse);
-
-    // Update score and check for conditions
-    updateScore(deltaScore);
-    dialogueCount++;
-
-    if (totalScore >= 20) {
-        std::cout << "Congratulations! You reached the required score. Starting the mini-game..." << std::endl;
-        if (miniGame.play()) {
-            outcome.calculate(player, npc);  // Add quest rewards based on mini-game result
-            std::cout << "You won the mini-game and completed the quest!" << std::endl;
-        } else {
-            std::cout << "You failed the mini-game. Quest ends here." << std::endl;
+        if (dialogueCount >= 15 || totalScore <= 0) {
+            std::cout << "The NPC denies your quest." << std::endl;
+            endInteraction();
+            return;
         }
-        endInteraction();
+
+        std::string response;
+        // Use Gemini::getResponse to generate response based on NPC context
+        try{
+            future<json> futureResp = Gemini().getResponse(
+                conversationHistory, npc.getName(), std::to_string(npc.getRank()), npc.getBackStory(),
+                npc.getLocName(), npc.getLocDesc(), npc.getLocthemeName(), npc.getQuestName(),
+                npc.getQuestDescription(), npc.getQuestTask());
+
+            json resp = futureResp.get();
+            // std::cout << "Response from Gemini: " << resp << std::endl;
+            response = resp["response"];
+        } catch (const std::exception& e) {
+            response = "I'm sorry, I didn't hear you!";
+            return;
+        }
+
+        // Add response to conversation history
+        conversationHistory.push_back(response);
+
+        // Display the response
+        std::cout << "NPC Response: " << response << std::endl;
+
+        std::string user_response;
+        std::cout << "User: ";
+        getline(std::cin, user_response);
+        std::cout << std::endl;
+        conversationHistory.push_back(user_response);
+
+        // Generate prompt and get score response
+        std::string scorePrompt = generateScorePrompt();
+        std::string scoreResponse = Gemini().query(scorePrompt);
+
+        // Convert response to integer score (assume valid response)
+        // std::cout << "Score response: " << scoreResponse << std::endl;
+        int deltaScore = std::stoi(scoreResponse);
+
+        // Update score and check for conditions
+        updateScore(deltaScore);
+        dialogueCount++;
     }
+
+    std::cout << "Congratulations! You reached the required score. Starting the mini-game..." << std::endl;
+    if (miniGame.play()) {
+        outcome.calculate(player, npc);  // Add quest rewards based on mini-game result
+        std::cout << "You won the mini-game and completed the quest!" << std::endl;
+    } else {
+        std::cout << "You failed the mini-game. Quest ends here." << std::endl;
+    }
+    endInteraction();
 }
 
 // Update the total score based on deltaScore
