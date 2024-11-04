@@ -41,6 +41,8 @@ public:
     int getQuestId() const;
     string getQuestName() const;
     string getQuestDescription() const;
+    string getQuestTask() const;
+    
 
     // Quest management
     void addQuest(Quest* quest);               // Add a quest to the NPC's quest queue

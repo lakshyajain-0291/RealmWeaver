@@ -8,7 +8,7 @@ NPC::NPC(int rank,Location &loc) : rank(rank),loc(&loc) {
     try
     {
         json resp = futureResp.get();
-        std::cout << "NPC JSON data: " << resp.dump(4) << std::endl; // Print formatted JSON
+        // std::cout << "NPC JSON data: " << resp.dump(4) << std::endl; // Print formatted JSON
 
         this->name = resp["npc"]["name"];
         this->backStory = resp["npc"]["backstory"];
@@ -32,66 +32,71 @@ NPC::NPC(int rank, const std::string& name, const std::string& backStory, Locati
 // Generate initial quests for NPC (from Gemini API or DB)
 void NPC::generateQuests() 
 {
-    future<json> futureResp = Gemini().genQuests(rank,name,backStory);
+    future<json> futureResp = Gemini().genQuests(rank, name, backStory);
 
     try
     {
+        // Get the quest data from the future response
         json questData = futureResp.get();
-        std::cout << "Quest data: " << questData.dump(4) << std::endl; // Print formatted JSON
+        // std::cout << "Quest data: " << questData.dump(4) << std::endl; // Print formatted JSON
 
         // Check if "quests" is an array in the JSON
         if (questData.contains("quests") && questData["quests"].is_array()) 
         {
-            for (const auto& quest : questData["quests"]) {
+            for (const auto& quest : questData["quests"]) 
+            {
+                // Extract quest ID and details
+                int questId = quest["quest_id"];
+                const auto& questDetails = quest["quest_details"];
 
-                const auto& questDetails= quest["quest_details"];
-                int questId=quest["quest_id"];
-
-
-                // Extract quest details
+                // Extract quest attributes
                 std::string name = questDetails["name"];
                 std::string description = questDetails["description"];
                 int rank = questDetails["rank"];
                 std::string task = questDetails["task"];
                 bool isUnique = questDetails["unique"];
-                
-                //get Reward
-                int expReward = questDetails["reward"].contains("exp") ? int(questDetails["reward"]["exp"]):0;                
-                Stats *rewardStats;
 
+                // Get experience reward
+                int expReward = questDetails["reward"].contains("exp") ? questDetails["reward"]["exp"].get<int>() : 0;
+
+                // Handle stats reward
+                Stats* rewardStats = nullptr;
                 if (questDetails["reward"].contains("statsAdder")) 
                 {
-                    rewardStats=new Stats(questDetails["reward"]["statsAdder"]);
+                    rewardStats = new Stats(questDetails["reward"]["statsAdder"]);
                 }
 
-                vector<Item*> items;
+                // Handle item rewards
+                std::vector<Item*> items;
                 if (questDetails["reward"].contains("item") && questDetails["reward"]["item"].is_array()) 
                 {
                     for (const auto& itemJson : questDetails["reward"]["item"]) 
                     {
                         Stats itemStats(itemJson["statsAdder"]);
-                        Item *newItem= new Item(itemJson["rank"],itemJson["name"],itemJson["desc"],&itemStats);
-
+                        Item* newItem = new Item(itemJson["rank"], itemJson["name"], itemJson["desc"], &itemStats);
                         items.push_back(newItem);
                     }
                 }
                 
-                Reward questReward(rewardStats,expReward, items);
+                // Create a reward object
+                Reward questReward(rewardStats, expReward, items);
 
                 // Create the new quest and add it
-                Quest* newQuest = new Quest(questId,name, description, rank, task, questReward,isUnique);
+                Quest* newQuest = new Quest(questId, name, description, rank, task, questReward, isUnique);
                 addQuest(newQuest);
             }
         } 
         else 
         {
-            std::cerr << "Invalid quest data received from Gemini API.\n";
+            std::cerr << "Invalid quest data received from Gemini API. Expected 'quests' array.\n";
         }
     }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl; // Handle exceptions
+    catch (const std::exception& e) 
+    {
+        std::cerr << "Error while generating quests: " << e.what() << std::endl; // Handle exceptions
     }
 }
+
 
 // Get the NPC's rank
 int NPC::getRank() const {
@@ -139,6 +144,11 @@ std::string NPC:: getQuestDescription() const{
     else return "";
 }
 
+std::string NPC:: getQuestTask() const{
+    if (!quests.empty())
+    return quests.front()->getTask();
+    else return "";
+}
 
 // Get the NPC's stats
 Stats* NPC::getStats() const {
@@ -184,6 +194,9 @@ void NPC::displayQuests() const {
     } else {
         std::cout << "No quests available for this NPC." << std::endl;
     }
+    std::cout << "Quest name: " << getQuestName() << std::endl;
+    std::cout << "Quest description: " << getQuestDescription() << std::endl;
+    std::cout << "Quest task: " << getQuestTask() << std::endl;
 }
 
 // Interaction logic for talking to the NPC
