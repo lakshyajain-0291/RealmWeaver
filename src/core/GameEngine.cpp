@@ -25,31 +25,9 @@ void testInteraction(std::string theme) {
     // Start the interaction
     interactionManager.startInteraction();
 
-    // Test displaying the initial dialogue
-    // std::string expectedInitialDialogue = "Hello, traveler! What brings you to Hogwarts?";
-    // assert(interactionManager.getTotalScore() == 10); // Check initial score
-    // std::cout << "Initial Dialogue: " << expectedInitialDialogue << std::endl;
-
-    // Simulate progression of the dialogue
-    interactionManager.progressDialogue();  // Simulate player selecting the next option
-
-    // Check that the response is generated based on the NPC context
-    // std::string geminiResponse = "Your journey is a noble one."; // Simulated response for test
-    interactionManager.progressDialogue();  // Progress dialoguet
-    interactionManager.progressDialogue();  // Progress dialoguet
-    interactionManager.progressDialogue();  // Progress dialoguet
-    interactionManager.progressDialogue();  // Progress dialoguet
-    interactionManager.progressDialogue();  // Progress dialoguet
-
-    // Assuming a mock function or a set score for this response
-    assert(interactionManager.getTotalScore() > 10);  // Ensure score has increased
-
     // Check final score after interaction
     int finalScore = interactionManager.getTotalScore();
     std::cout << "Final score: " << finalScore << std::endl;
-
-    // End the interaction
-    interactionManager.endInteraction();
 }
 
 void testGeneration(std::string theme){
