@@ -50,11 +50,11 @@ std::string InteractionManager::getQuestDetails() const {
 
 // Generate prompt for score calculation with examples
 std::string InteractionManager::generateScorePrompt() const {
-    std::string prompt = "Based on previous dialogues, generate a score as an integer (-3 to +3) for interaction relevance.\n";
+    std::string prompt = "Based on previous dialogues, generate a score as an integer (-40 to +100) for interaction relevance.\n";
     prompt += "Example:\n";
-    prompt += "- If NPC response matches player's query well, score = 8.\n";
-    prompt += "- If response is generic or neutral, score = 6.\n";
-    prompt += "- If response shows frustration, score = -4.\n";
+    prompt += "- If NPC response matches player's query well, score = 80.\n";
+    prompt += "- If response is generic or neutral, score = 60.\n";
+    prompt += "- If response shows frustration, score = 0.\n";
     prompt += "Previous dialogue: \n";
     for (const auto& dialogue : conversationHistory) {
         prompt += "- " + dialogue + "\n";
@@ -71,11 +71,21 @@ void InteractionManager::progressDialogue() {
         return;
     }
 
+    std::string response;
     // Use Gemini::getResponse to generate response based on NPC context
-    std::string response = Gemini().getResponse(
-        conversationHistory, npc.getName(), std::to_string(npc.getRank()), npc.getBackStory(),
-        npc.getLocName(), npc.getLocDesc(), npc.getLocthemeName(), getQuestDetails()
-    );
+    try{
+        future<json> futureResp = Gemini().getResponse(
+            conversationHistory, npc.getName(), std::to_string(npc.getRank()), npc.getBackStory(),
+            npc.getLocName(), npc.getLocDesc(), npc.getLocthemeName(), npc.getQuestName(),
+            npc.getQuestDescription(), npc.getQuestTask());
+
+        json resp = futureResp.get();
+        // std::cout << "Response from Gemini: " << resp << std::endl;
+        response = resp["response"];
+    } catch (const std::exception& e) {
+        response = "I'm sorry, I didn't hear you!";
+        return;
+    }
 
     // Add response to conversation history
     conversationHistory.push_back(response);
