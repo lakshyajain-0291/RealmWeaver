@@ -519,7 +519,7 @@ future<json> Gemini::getResponse(const std::vector<std::string>& dialogueHistory
     return async(launch::async, [this, dialogueHistory, npcName, npcRank, npcBackStory, locName, locDesc, themeName, questName, questDescription, questTask]()
     {
         // Construct the prompt for the NPC's response
-        std::string prompt = "You are an NPC with the following context:\n\n";
+        std::string prompt = "You are an NPC with the name "+ npcName + " and following context:\n\n";
         prompt += "NPC Details:\n";
         prompt += "Name: " + npcName + "\n";
         prompt += "Rank: " + npcRank + "\n";
@@ -544,11 +544,11 @@ future<json> Gemini::getResponse(const std::vector<std::string>& dialogueHistory
             // Alternating NPC and Player dialogue
             if (i % 2 == 0) // NPC's turn
             {
-                prompt += "NPC: " + dialogueHistory[i] + "\n";
+                prompt += std::to_string(i+1) + ". " + npcName + ": " + dialogueHistory[i] + "\n";
             } 
             else // Player's turn
             {
-                prompt += "Player: " + dialogueHistory[i] + "\n";
+                prompt += std::to_string(i+1) + ". " + "User: " + dialogueHistory[i] + "\n";
             }
         }
 
