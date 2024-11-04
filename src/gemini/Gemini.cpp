@@ -261,7 +261,7 @@ future<json> Gemini::genNPC(const int& rank,const string &locName, const string 
         };
         // cout<<defaultJson;
         string prompt = "Generate an NPC for a " + theme + "-themed game. The NPC should be suitable for a location named '" + locName + "' described as '" + locDesc + "'. The NPC should be based on their rank, which is " + std::to_string(rank)+"/10 " + "("+GameEngine().getRankName(rank)+").";        
-        cout<<prompt;
+        // cout<<prompt;
         json jsonResp=this->sendGeminiReq("../json/npc.json",prompt);
 
         // cout<<jsonResp;
@@ -331,28 +331,42 @@ future<json> Gemini::genQuests(const int &rank, const string &npcName, const str
     {
         // Default quest structure in case the API call fails or response is invalid
         json defaultResp = {
-            { "quests", json::array() }
+            { "quests", json::array({
+                {
+                    { "quest_name", "Unknown Quest" },
+                    { "description", "A generic quest given by an unknown NPC with no specific objective." },
+                    { "difficulty", "Easy" }
+                }
+            }) }
         };
 
-        // Prepare prompt
+        // Construct the prompt for generating quests
         string prompt = 
-            "Generate a quest or a series of quests for an NPC to give to the Player. NPC is named '" + npcName + "', "
-            "with the following description: '" + npcBackStory + "'. "
-            "The NPC has a rank of " + std::to_string(rank) + "/10 (" + GameEngine().getRankName(rank) + "). "
-            "The backstory of the NPC should inform the quest themes.";
+            "Generate a quest or a series of quests for the NPC named '" + npcName + "', "
+            "who has the following background: '" + npcBackStory + "'. "
+            "The NPC holds a rank of " + to_string(rank) + "/10 ("
+            + GameEngine().getRankName(rank) + "). "
+            "Based on the NPC's rank and background, provide quests with objectives, "
+            "potential rewards, and estimated difficulty levels. "
+            "The quest should feel personalized to the NPC's backstory and rank, "
+            "challenging the player accordingly.";
 
-        cout<<prompt;
+        // Optional debug output of the constructed prompt
+        // cout << "Constructed Prompt: " << prompt << endl;
 
-        // Send request to Gemini API
+        // Send the request to the Gemini API
         json jsonResp = this->sendGeminiReq("../json/npcQuests.json", prompt);
-        cout<<jsonResp;
 
-        // Ensure response is valid or fallback to default
+        // Validate the response; use default response if validation fails
         json final = isRespCorrect(jsonResp, defaultResp);
-        cout<<final;
+        
+        // Output the final response for debugging
+        // cout << "Final Response: " << final.dump(4) << endl;
+
         return final;
     });
 }
+
 
 future<json> Gemini::genLocationByGemini(const int &rank, const string &themeName)
 {
@@ -375,11 +389,11 @@ future<json> Gemini::genLocationByGemini(const int &rank, const string &themeNam
 
         // Send request to Gemini API
         json jsonResp = this->sendGeminiReq("../json/location.json", prompt);
-        cout << jsonResp;
+        // cout << jsonResp;
 
         // Validate the response, fallback to the default response if necessary
         json final = isRespCorrect(jsonResp, defaultResp);
-        cout << final;
+        // cout << final;
 
         return final;
     });
@@ -410,7 +424,7 @@ future<json> Gemini::genLocationByGemini(const int &rank, const string &name, co
 
         // Ensure response is valid or fallback to default
         json final = isRespCorrect(jsonResp, defaultResp);
-        cout << final; // Optional: Print the final JSON response for debugging
+        // cout << final; // Optional: Print the final JSON response for debugging
 
         return final;
     });
@@ -457,14 +471,14 @@ future<json> Gemini::genItem(int rank, const string &themeName)
             "The item should be suitable for rank " + std::to_string(rank) + "/10 (" + GameEngine().getRankName(rank) + "). "
             "Provide a detailed description of the item, its properties, and how it can be used.";
 
-        cout << prompt; // Optional: Print the prompt for debugging
+        // cout << prompt; // Optional: Print the prompt for debugging
 
         // Send request to Gemini API
         json jsonResp = this->sendGeminiReq("../json/item.json", prompt);
 
         // Ensure response is valid or fallback to default
         json final = isRespCorrect(jsonResp, defaultResp);
-        cout << final; // Optional: Print the final JSON response for debugging
+        // cout << final; // Optional: Print the final JSON response for debugging
         return final;
     });
 }
@@ -491,25 +505,72 @@ std::string Gemini::query(const std::string& prompt) {
     }
 }
 
+future<json> Gemini::getResponse(const std::vector<std::string>& dialogueHistory, 
+                                  const std::string& npcName, 
+                                  const std::string& npcRank, 
+                                  const std::string& npcBackStory, 
+                                  const std::string& locName, 
+                                  const std::string& locDesc, 
+                                  const std::string& themeName, 
+                                  const std::string& questName, 
+                                  const std::string& questDescription, 
+                                  const std::string& questTask) 
+{
+    return async(launch::async, [this, dialogueHistory, npcName, npcRank, npcBackStory, locName, locDesc, themeName, questName, questDescription, questTask]()
+    {
+        // Construct the prompt for the NPC's response
+        std::string prompt = "You are an NPC with the following context:\n\n";
+        prompt += "NPC Details:\n";
+        prompt += "Name: " + npcName + "\n";
+        prompt += "Rank: " + npcRank + "\n";
+        prompt += "Backstory: " + npcBackStory + "\n\n";
+        
+        // Location context
+        prompt += "Location:\n";
+        prompt += "Name: " + locName + "\n";
+        prompt += "Description: " + locDesc + "\n";
+        prompt += "Theme: " + themeName + "\n\n";
+        
+        // Quest context
+        prompt += "Quest Details:\n";
+        prompt += "Quest Name: " + questName + "\n";
+        prompt += "Description: " + questDescription + "\n";
+        prompt += "Task: " + questTask + "\n\n";
 
-std::string Gemini::getResponse(const std::vector<std::string>& dialogueHistory, const std::string& npcName, 
-                                 const std::string& npcRank, const std::string& npcBackStory, 
-                                 const std::string& locName, const std::string& locDesc, 
-                                 const std::string& themeName, const std::string& questDetails) {
-    std::string prompt = "You are interacting with an NPC with the following context:\n\n";
-    prompt += "NPC Details:\n";
-    prompt += "Name: " + npcName + "\n";
-    prompt += "Rank: " + npcRank + "\n";
-    prompt += "Backstory: " + npcBackStory + "\n\n";
-    prompt += "Location:\n";
-    prompt += "Name: " + locName + "\n";
-    prompt += "Description: " + locDesc + "\n";
-    prompt += "Theme: " + themeName + "\n\n";
-    prompt += questDetails + "\n"; // Include quest details
-    prompt += "Conversation History:\n";
-    for (const auto& dialogue : dialogueHistory) {
-        prompt += "- " + dialogue + "\n";
-    }
-    prompt += "\nGenerate a response that respects the NPC's backstory, location, and quest context.";
-    return query(prompt);
+        // Conversation history
+        prompt += "Conversation History:\n";
+        for (size_t i = 0; i < dialogueHistory.size(); i++) 
+        {
+            // Alternating NPC and Player dialogue
+            if (i % 2 == 0) // NPC's turn
+            {
+                prompt += "NPC: " + dialogueHistory[i] + "\n";
+            } 
+            else // Player's turn
+            {
+                prompt += "Player: " + dialogueHistory[i] + "\n";
+            }
+        }
+
+        // Final instruction for response generation
+        prompt += "\nGenerate a response that respects your backstory, location, and quest context, and interact with me:\n";
+
+        // Default response structure in case the API call fails or the response is invalid
+        json defaultResp = {
+            { "response", "I'm sorry, but I cannot provide a response at this time." }
+        };
+
+        // Output the constructed prompt for debugging
+        // std::cout << "Constructed Prompt: " << prompt << std::endl;
+
+        // Send request to Gemini API
+        json jsonResp = this->sendGeminiReq("../json/npcResponse.json", prompt);
+
+        // Ensure response is valid or fallback to default
+        json final = isRespCorrect(jsonResp, defaultResp);
+        // Optional: Print the final JSON response for debugging
+        // std::cout << "Final Response: " << final.dump(4) << std::endl;
+
+        return final;
+    });
 }
