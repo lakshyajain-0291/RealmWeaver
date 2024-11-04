@@ -52,6 +52,8 @@ public:
     const string& getDescription() const;
     const string& getStatus() const;
     const Reward& getReward() const;
+    const string& getTask() const;
+    
     int getRank() const;
     const string& getObjectiveDesc() const;
 

@@ -76,6 +76,10 @@ int Quest::getRank() const {
     return rank;
 }
 
+const string& Quest::getTask() const {
+    return task;
+}
+
 const string& Quest::getObjectiveDesc() const {
     return task;
 }
