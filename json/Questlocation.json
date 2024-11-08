@@ -1,0 +1,64 @@
+{
+    "contents": [
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Based on the quest 'The Shadow King's Bidding' with the description: 'Bal'thor, the Shadow King, has summoned you to his obsidian castle. He demands your allegiance, promising unimaginable power in exchange for your service. Will you succumb to his darkness or resist his corrupting influence?', determine the location most suited for this quest from the following list of locations:\n\nLocation 0: Obsidian Castle - A dark and foreboding fortress, built from black stone that absorbs the light around it. It is said to be a place of pure evil, where no light can penetrate. The castle is surrounded by a bleak and desolate wasteland, and only the brave or foolish dare to approach.\nLocation 1: Ancient Temple Ruins - The ruins of an old temple, hidden deep in a remote jungle. The temple once belonged to an ancient order of mystics who worshipped forgotten gods. Now, it is a decaying monument to the past, overrun with dangerous wildlife and the remnants of ancient traps.\nLocation 2: Volcanic Crater - A vast, smoldering pit that houses a violent and ever-active volcano. The air is thick with smoke and the ground is cracked and unstable. It is a dangerous place, where only those with great courage dare to venture.\nLocation 3: Crystal Cavern - A glowing cavern beneath the mountains, with walls lined with shimmering crystals that reflect the faintest light. The cavern is a place of mystery, home to ancient beings and valuable, yet dangerous, artifacts.\nLocation 4: The Forgotten Forest - An ancient forest that has been untouched by time. Tall trees with thick canopies block out the sun, and the forest floor is covered with moss and vines. Strange creatures roam the forest, and few who enter leave with their sanity intact."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "0"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Based on the quest 'The Gatekeeper's Trial' with the description: 'Baruk, the Gatekeeper, guards the entrance to the Demon King's Castle. He is known for his brutal strength and his love of riddles. To pass, you must prove your worth by solving his riddle.', determine the location most suited for this quest from the following list of locations:\n\nLocation 0: Demon King's Castle Entrance - A massive stone gate with eerie red light emanating from within. The area surrounding the entrance is littered with remnants of past challengers. The air is thick with magic, and a sense of dread hangs over the place.\nLocation 1: Pirate Cove - A mysterious and dangerous cove, shrouded in mist and home to treacherous pirates. The cliffs around the cove are steep and jagged, and the waters below are full of shipwrecks and dangers.\nLocation 2: Volcanic Crater - A vast, smoldering pit that houses a violent and ever-active volcano. The air is thick with smoke and the ground is cracked and unstable. It is a dangerous place, where only those with great courage dare to venture.\nLocation 3: Shadowfell Swamp - A murky, fog-covered swamp that seems to distort time itself. The trees are gnarled and twisted, and the air smells of decay. It's a place of dark magic, where lost souls wander endlessly."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "0"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Based on the quest 'Scorch's Kindness' with the description: 'Scorch wants to help a group of villagers who are struggling to keep their crops alive during a drought. He asks for your help to bring them some water.', determine the location most suited for this quest from the following list of locations:\n\nLocation 0: Villagers' Settlement - A small rural village struggling with a severe drought. The crops have withered, and the villagers are in desperate need of water. The air is dry and the earth cracked, but there is a sense of hope among the villagers that help will arrive.\nLocation 1: Pirate Cove - A mysterious and dangerous cove, shrouded in mist and home to treacherous pirates. The cliffs around the cove are steep and jagged, and the waters below are full of shipwrecks and dangers.\nLocation 2: Volcanic Crater - A vast, smoldering pit that houses a violent and ever-active volcano. The air is thick with smoke and the ground is cracked and unstable. It is a dangerous place, where only those with great courage dare to venture.\nLocation 3: Desert Oasis - A small, life-saving oasis in the middle of a vast desert. It offers a brief respite from the harsh sun, with its cool waters and palm trees. But danger lurks nearby as the desert sands continue to encroach upon the oasis."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "0"
+                }
+            ]
+        }
+    ],
+    "systemInstruction": {
+        "role": "system",
+        "parts": [
+            {
+                "text": "Respond with only the location key (e.g., '0', '1', '2') corresponding to the location most suited for the quest based on the quest description and its suitability."
+            }
+        ]
+    },
+    "generationConfig": {
+        "temperature": 0.1,
+        "responseMimeType": "application/json"
+    }
+}
