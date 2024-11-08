@@ -574,3 +574,77 @@ future<json> Gemini::getResponse(const std::vector<std::string>& dialogueHistory
         return final;
     });
 }
+
+std::future<json> Gemini::get_loc_json_from_quest(std::unordered_map<int, std::shared_ptr<Location>> loc_map,
+                                                  const std::string &quest_name, const std::string &quest_disc)
+{
+    return std::async(std::launch::async, [this, loc_map, quest_name, quest_disc]() 
+    {
+        // Prepare the prompt for the Gemini API request
+        std::string prompt = "Based on the quest '" + quest_name + "' with the description: '" + quest_disc + "', "
+                             "determine the location most suited for this quest from the following list of locations:\n";
+
+        // Add location details to the prompt
+        for (const auto &entry : loc_map) {
+            int key = entry.first;  // Location key
+            std::shared_ptr<Location> loc_ptr = entry.second; // Location pointer
+
+            std::string loc_name = loc_ptr->getName();
+            std::string loc_desc = loc_ptr->getDesc();
+
+            // Append the location details to the prompt
+            prompt += "Location " + std::to_string(key) + ": " + loc_name + " - " + loc_desc + "\n";
+        }
+
+        // Send the request to Gemini API
+        json jsonResp = this->sendGeminiReq("../json/Questlocation.json", prompt);
+
+        // Default location key (fallback if the response is invalid)
+        int location_key = -1;
+
+        // Ensure the response is valid and check for the most suited location
+        if (jsonResp.contains("response") && jsonResp["response"].is_string()) {
+            std::string response = jsonResp["response"];
+
+            // Logic to extract the most suited location key from Gemini's response
+            for (const auto &entry : loc_map) {
+                int key = entry.first;
+                std::shared_ptr<Location> loc_ptr = entry.second;
+                std::string loc_name = loc_ptr->getName();
+                
+                // Check if the response mentions a location name (simplified matching logic here)
+                if (response.find(loc_name) != std::string::npos) {
+                    location_key = key;
+                    break; // Once we find a match, we can exit the loop
+                }
+            }
+        }
+
+        // Prepare JSON output with the location key
+        json output_json = {
+            {"location_key", location_key}
+        };
+
+        return output_json; // Return the location key in JSON format
+    });
+}
+
+
+int Gemini::get_loc_key_from_quest(std::unordered_map<int, std::shared_ptr<Location>> loc_map, 
+    const std::string &quest_name, const std::string &quest_disc){
+
+    future<json> LocResp = Gemini().get_loc_json_from_quest(loc_map, quest_name, quest_disc);
+    json locJson = LocResp.get();
+
+    if (locJson.contains("location_key")) {
+        int location_key = locJson["location_key"];
+        return location_key;
+    } else {
+        return 0;
+    }
+}
+
+std::string Gemini::gen_intro(std::string theme_name){
+    std::string prompt = "Given the theme name of the game, create an engaging and immersive backstory for the player's character. The character should have a rich history, personal motivations, and past experiences that influence their current journey. Include key details such as their origins, backstory, and their ultimate goals. Make sure the backstory ties into the game's world, setting, and plot, and aligns with the tone and style of the theme. The backstory should serve as a foundation for the player's role in the game and provide a compelling reason for their involvement in the adventure. And note that ouput must be less than 200 words. Theme name : " + theme_name;
+    return Gemini().query(prompt);
+}
