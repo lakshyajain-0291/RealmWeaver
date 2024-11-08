@@ -4,6 +4,8 @@
 #include <GameEngine.h>
 #include <NPC.h>
 #include <Stats.h>
+#include <Location.h>
+
 
 class Gemini
 {
@@ -17,6 +19,9 @@ class Gemini
         json sendGeminiReq(const string &promptFilePath, const string &prompt);
         json sendBatchGeminiReq(const vector<string>& prompts);
         json isRespCorrect(const json& resp, const json& def);
+
+        future<json> get_loc_json_from_quest(std::unordered_map<int, std::shared_ptr<Location>> loc_map,
+                                    const std::string &quest_name, const std::string &quest_disc);
 
     public:
         Gemini();
@@ -44,4 +49,9 @@ class Gemini
                                   const std::string& questName, 
                                   const std::string& questDescription, 
                                   const std::string& questTask);
+
+        int get_loc_key_from_quest(std::unordered_map<int, std::shared_ptr<Location>> loc_map,
+                                    const std::string &quest_name, const std::string &quest_disc);
+
+        std::string gen_intro(std::string theme_name);
 };
