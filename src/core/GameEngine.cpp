@@ -23,11 +23,11 @@ void testInteraction(std::string theme) {
     InteractionManager interactionManager(player, npc);
 
     // Start the interaction
-    interactionManager.startInteraction();
+    int res = interactionManager.startInteraction();
 
     // Check final score after interaction
     int finalScore = interactionManager.getTotalScore();
-    std::cout << "Final score: " << finalScore << std::endl;
+    std::cout << "result: " << res << " Final score: " << finalScore << std::endl;
 }
 
 void testGeneration(std::string theme){

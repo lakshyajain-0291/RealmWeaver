@@ -36,8 +36,8 @@ public:
 class InteractionManager {
 public:
     InteractionManager(Player& player, NPC& npc);
-    void startInteraction();
-    void progressDialogue();  // Progress to the next dialogue node
+    int startInteraction();
+    int progressDialogue();  // Progress to the next dialogue node
     void endInteraction();
     int getTotalScore() const;  // Returns total score for testing purposes
 

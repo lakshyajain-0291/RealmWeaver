@@ -27,7 +27,7 @@ InteractionManager::InteractionManager(Player& player, NPC& npc)
     : player(player), npc(npc), currentNode(nullptr), totalScore(initial_score), dialogueCount(0) {}
 
 // Start the interaction
-void InteractionManager::startInteraction() {
+int  InteractionManager::startInteraction() {
     std::cout << "You approach " << npc.getName() << ", a " << npc.getRank() << " at " << npc.getLocName() << ".\n";
     std::cout << "Location: " << npc.getLocDesc() << " (Theme: " << npc.getLocthemeName() << ")\n";
 
@@ -53,7 +53,7 @@ void InteractionManager::startInteraction() {
     updateScore(deltaScore);
     dialogueCount++;
 
-    progressDialogue();
+    return progressDialogue();
 }
 
 // Display the current dialogue
@@ -84,13 +84,13 @@ std::string InteractionManager::generateScorePrompt() const {
 }
 
 // Progress the dialogue
-void InteractionManager::progressDialogue() {
+int InteractionManager::progressDialogue() {
     while(totalScore < req_score){
 
-        if (dialogueCount >= 15 || totalScore <= 0) {
-            std::cout << "The NPC denies your quest." << std::endl;
-            endInteraction();
-            return;
+        if (dialogueCount >= 15) {
+            return 1;
+        } else if (totalScore < 0) {
+            return 0;
         }
 
         std::string response;
@@ -106,7 +106,6 @@ void InteractionManager::progressDialogue() {
             response = resp["response"];
         } catch (const std::exception& e) {
             response = "I'm sorry, I didn't hear you!";
-            return;
         }
 
         // Add response to conversation history
@@ -134,14 +133,15 @@ void InteractionManager::progressDialogue() {
         dialogueCount++;
     }
 
-    std::cout << "Congratulations! You reached the required score. Starting the mini-game..." << std::endl;
-    if (miniGame.play()) {
-        outcome.calculate(player, npc);  // Add quest rewards based on mini-game result
-        std::cout << "You won the mini-game and completed the quest!" << std::endl;
-    } else {
-        std::cout << "You failed the mini-game. Quest ends here." << std::endl;
-    }
-    endInteraction();
+    // std::cout << "Congratulations! You reached the required score. Starting the mini-game..." << std::endl;
+    // if (miniGame.play()) {
+    //     outcome.calculate(player, npc);  // Add quest rewards based on mini-game result
+    //     std::cout << "You won the mini-game and completed the quest!" << std::endl;
+    // } else {
+    //     std::cout << "You failed the mini-game. Quest ends here." << std::endl;
+    // }
+
+    return 2;
 }
 
 // Update the total score based on deltaScore
