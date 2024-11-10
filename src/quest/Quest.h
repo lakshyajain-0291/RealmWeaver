@@ -5,7 +5,7 @@
 //ADD PUNISHMENTS IF NEEDED..
 class Stats;
 class Item;
-
+class Quest;
 class Reward {
 private:
     Stats *stats;     // Stat reward (can increase health, attack, etc.)
@@ -14,6 +14,7 @@ private:
 
 public:
     // Constructor
+    Reward();
     Reward(Stats *stats, int exp, vector<Item*> items);
     
     // Getters
@@ -42,7 +43,7 @@ private:
 
 public:
     // Constructors
-    // Quest();  // Default constructor (could be used for creating quests from the DB)
+    Quest();  // Default constructor (could be used for creating quests from the DB)
     Quest(int id, const string& name, const string& description, int rank, const string& task, Reward reward,bool isUnique); // Construct from parameters
 
     // Getters
@@ -51,6 +52,8 @@ public:
     const string& getDescription() const;
     const string& getStatus() const;
     const Reward& getReward() const;
+    const string& getTask() const;
+    
     int getRank() const;
     const string& getObjectiveDesc() const;
 

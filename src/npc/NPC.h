@@ -34,6 +34,16 @@ public:
     string getBackStory() const;          // Get the NPC's backstory
     Stats* getStats() const;                   // Get NPC's stats
 
+    string getLocName() const;
+    string getLocDesc() const;
+    string getLocthemeName() const;
+
+    int getQuestId() const;
+    string getQuestName() const;
+    string getQuestDescription() const;
+    string getQuestTask() const;
+    
+
     // Quest management
     void addQuest(Quest* quest);               // Add a quest to the NPC's quest queue
     void removeQuest();                        // Remove the first quest (once completed)

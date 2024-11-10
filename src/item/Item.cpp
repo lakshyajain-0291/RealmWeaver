@@ -1,15 +1,20 @@
 #include <Item.h>
 
 // Constructor
-Item::Item(const int rank) : rank(rank)
+Item::Item(const int rank, const string& themeName) : rank(rank)
 {
-    // //get item from db or from gemini
-    // future<json> futureJson = Gemini().genItem(rank);
-    // json item = futureJson.get(); // Block until the result is ready
-    // id, name, description =  item["id"], item["name"], item["description"];
+    //get item from db or from gemini
+    future<json> futureJson = Gemini().genItem(rank, themeName);
+    json item = futureJson.get(); // Block until the result is ready
+    name, description =  item["item"]["name"], item["item"]["description"];
+    
+    // Create a unique ID by combining name and description using std::hash
+    std::hash<std::string> hasher;
+    id = hasher(name + description); // Combine both name and description for uniqueness
 
-    // isEquipped=false;
-    // stats =new Stats();
+
+    isEquipped=false;
+    stats =new Stats();
 }
 
 Item::Item(const int& rank,const string& name, const string& description,Stats *stats)

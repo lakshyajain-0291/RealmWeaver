@@ -12,7 +12,7 @@ Stats::Stats() {
         
         // Wait for the result from the asynchronous call
         json statResponse = statResponseFuture.get();
-        std::cout << "Stats JSON data: " << statResponse.dump(4) << std::endl; // Print formatted JSON
+        // std::cout << "Stats JSON data: " << statResponse.dump(4) << std::endl; // Print formatted JSON
 
         // Parse the JSON response and populate the default stats
         if (statResponse.contains("attributes") && statResponse["attributes"].is_array()) 
@@ -45,7 +45,7 @@ Stats::Stats(const int& rank, const string &npcName, const string &npcBackStory)
         
         // Wait for the result from the asynchronous call
         json statResponse = statResponseFuture.get();
-        std::cout << "Stats JSON data: " << statResponse.dump(4) << std::endl; // Print formatted JSON
+        // std::cout << "Stats JSON data: " << statResponse.dump(4) << std::endl; // Print formatted JSON
 
         // Parse the JSON response and populate the default stats
         if (statResponse.contains("attributes") && statResponse["attributes"].is_array()) 
@@ -71,7 +71,7 @@ Stats::Stats(const int& rank, const string &npcName, const string &npcBackStory)
     try 
     {
         json statResponse = futureResp.get(); // Block until the result is ready
-        std::cout << "NPC STATS JSON data: " << statResponse.dump(4) << std::endl; // Print formatted JSON
+        // std::cout << "NPC STATS JSON data: " << statResponse.dump(4) << std::endl; // Print formatted JSON
 
         for (auto& stat : defaultStats) 
         {

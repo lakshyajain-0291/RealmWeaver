@@ -1,0 +1,96 @@
+{
+    "contents": [
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate an item for a fantasy-themed game. The item should be suitable for a rank 1/10 (Inferior) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"item\": {\"name\": \"Rusty Sword\", \"rank\": 1, \"description\": \"A dull and worn sword, barely capable of cutting through tough leather. This sword is more of a relic than a weapon, passed down through generations, but now it only serves as a reminder of better times.\"} }"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate an item for a steampunk-themed game. The item should be suitable for a rank 2/10 (Basic) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"item\": {\"name\": \"Copper Piston\", \"rank\": 2, \"description\": \"A basic copper piston, used in many steam-powered devices. While not glamorous, it is reliable and essential for the functioning of various machines. A must-have for any aspiring engineer in the city.\"} }"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate an item for a post-apocalyptic-themed game. The item should be suitable for a rank 3/10 (Common) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"item\": {\"name\": \"Rusted Canister\", \"rank\": 3, \"description\": \"A weathered and rusted canister that once contained valuable supplies. Now it’s empty, but scavengers often collect these for potential use in crafting or bartering.\"} }"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate an item for a mythological-themed game. The item should be suitable for a rank 7/10 (Epic) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"item\": {\"name\": \"Elven Bow of Destiny\", \"rank\": 7, \"description\": \"Crafted from the wood of the ancient trees of the Elven forest, this bow is imbued with magic. It grants the wielder unparalleled accuracy and the ability to shoot arrows that never miss their mark. A coveted item among hunters and warriors alike.\"} }"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate an item for a pirate-themed game. The item should be suitable for a rank 8/10 (Legendary) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"item\": {\"name\": \"Heart of the Ocean\", \"rank\": 8, \"description\": \"An exquisite jewel said to contain the soul of a legendary sea creature. Many pirates have fought over it, believing it grants immense power and control over the tides. Its deep blue color shines like the sea itself, making it a truly legendary treasure.\"} }"
+                }
+            ]
+        }
+    ],
+    "systemInstruction": {
+        "role": "system",
+        "parts": [
+            {
+                "text": "Respond exactly and concisely with a JSON object that follows this format: { \"item\": {\"name\": \"Item Name\", \"rank\": rankValue, \"description\": \"Item description.\"} }. The item description should match the theme and the rank provided by the user. If the input is invalid, do not return the JSON."
+            }
+        ]
+    },
+    "generationConfig": {
+        "temperature": 0.1,
+        "responseMimeType": "application/json"
+    }
+}

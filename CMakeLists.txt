@@ -26,8 +26,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/player          # Player module headers
     ${CMAKE_SOURCE_DIR}/src/npc             # NPC module headers
     ${CMAKE_SOURCE_DIR}/src/quest           # Quest module headers
-    ${CMAKE_SOURCE_DIR}/src/location        # Location module headers
     ${CMAKE_SOURCE_DIR}/src/inventory       # Inventory module headers
+    ${CMAKE_SOURCE_DIR}/src/location        # Location module headers
     )
 
 # Find the CURL library. This searches for the required CURL package on your system.
@@ -77,7 +77,7 @@ set(EVENT_SOURCES
 )
 
 set(INTERACTIONS_SOURCES
-src/interactions/InteractionSystem.cpp
+    src/interactions/InteractionSystem.cpp
 )
 
 
@@ -94,7 +94,7 @@ set(SOURCES
     ${INVENTORY_SOURCES}
     ${ITEM_SOURCES}
     ${EVENT_SOURCES}
-    ${INTERACTION_SOURCES}
+    ${INTERACTIONS_SOURCES}
 )
 
 # Add an executable target. This tells CMake to generate an executable named "main"

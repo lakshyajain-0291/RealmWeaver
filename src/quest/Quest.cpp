@@ -1,5 +1,13 @@
 #include "Quest.h"
 
+
+Reward::Reward() {
+    stats = new Stats();
+    exp = 0;
+    vector<Item*> items;
+    this->items = items;
+}
+
 Reward::Reward(Stats *stats, int exp, vector<Item*> items) 
     : stats(stats), exp(exp), items(items) {}
 
@@ -28,7 +36,18 @@ void Reward::displayReward() const {
 
 // Quest class methods
 
-// Quest::Quest() : id(0), rank(1), status("ongoing"), reward(Reward(Stats(), 0, Item(1))) {}
+// Quest::Quest() : id(0), rank(1), status("ongoing") {
+//     vector<Item*> items;
+//     this->reward = Reward(new Stats(), 0, items);
+// }
+
+Quest::Quest(){
+    id = 0;
+    rank = 1;
+    status = "ongoing";
+    isCompleted = false;
+}
+
 
 Quest::Quest(int id,const string& name, const string& description, int rank, const string &task, Reward reward, bool isUnique)
     : id(id),name(name), description(description), rank(rank), task(task), reward(reward), status("ongoing"),isUnique(isUnique) {}
@@ -55,6 +74,10 @@ const Reward& Quest::getReward() const {
 
 int Quest::getRank() const {
     return rank;
+}
+
+const string& Quest::getTask() const {
+    return task;
 }
 
 const string& Quest::getObjectiveDesc() const {

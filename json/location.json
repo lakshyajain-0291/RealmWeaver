@@ -1,0 +1,96 @@
+{
+    "contents": [
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate a location for a fantasy-themed game. The location should be suitable for a rank 1/10 (Inferior) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"location\": {\"name\": \"Tumbledown Village\", \"rank\": 1, \"description\": \"A small and isolated village on the edge of a vast forest, Tumbledown is barely surviving. The buildings are old and crumbling, and the villagers are poor and struggling to get by. Strange whispers from the forest have caused many to flee, leaving the village half-abandoned.\"} }"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate a location for a steampunk-themed game. The location should be suitable for a rank 2/10 (Basic) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"location\": {\"name\": \"Gearlock Station\", \"rank\": 2, \"description\": \"Gearlock Station is a small outpost at the edge of the industrial city. Steam-powered machines fill the streets, and workers scurry to and from the factories. The station itself is a hub for minor engineers and mechanics, making it a modest but crucial part of the city's infrastructure.\"} }"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate a location for a post-apocalyptic-themed game. The location should be suitable for a rank 3/10 (Common) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"location\": {\"name\": \"The Wastelands\", \"rank\": 3, \"description\": \"Once a thriving metropolis, The Wastelands are now a barren and desolate area. Crumbling skyscrapers litter the landscape, and scavengers pick through the rubble. Toxic air and dangerous creatures roam the area, making it a perilous place for all but the hardiest survivors.\"} }"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate a location for a mythological-themed game. The location should be suitable for a rank 7/10 (Epic) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"location\": {\"name\": \"The Hall of Titans\", \"rank\": 7, \"description\": \"An ancient and magnificent hall, carved from the stone of a towering mountain, The Hall of Titans is where the great warriors of legend once gathered. The walls are lined with statues of past heroes, and the air is thick with the weight of their deeds. Only the most worthy may enter and claim the honor of their ancestors.\"} }"
+                }
+            ]
+        },
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "text": "Generate a location for a pirate-themed game. The location should be suitable for a rank 8/10 (Legendary) level. The description should match the theme and the rank."
+                }
+            ]
+        },
+        {
+            "role": "model",
+            "parts": [
+                {
+                    "text": "{ \"location\": {\"name\": \"Skull King's Isle\", \"rank\": 8, \"description\": \"Shrouded in mist and treachery, Skull King's Isle is the final resting place of the legendary pirate lord. The island is surrounded by deadly reefs and guarded by the spirits of the fallen. Buried deep within its treacherous caves is the greatest treasure ever amassed, though few who seek it have returned.\"} }"
+                }
+            ]
+        }
+    ],
+    "systemInstruction": {
+        "role": "system",
+        "parts": [
+            {
+                "text": "Respond exactly and concisely with a JSON object that follows this format: { \"location\": {\"name\": \"Location Name\", \"rank\": rankValue, \"description\": \"Location description.\"} }. The location description should match the theme and the rank provided by the user. If the input is invalid, do not return the JSON."
+            }
+        ]
+    },
+    "generationConfig": {
+        "temperature": 0.1,
+        "responseMimeType": "application/json"
+    }
+}
