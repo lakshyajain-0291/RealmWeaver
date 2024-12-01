@@ -1,191 +1,123 @@
+<div align="center">
+
 # RealmWeaver
 
-**RealmWeaver** is a dynamic 2D open-ended game built in C++ as a final project for a Data Structures and Algorithms course. This game leverages the GEMINI API to generate game elements such as NPCs, quests, locations, items, and rewards, all dynamically based on user-provided themes. The game incorporates various data structures and algorithms to manage world generation, pathfinding, item storage, and more, creating an immersive and adaptive gaming experience.
+[<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/cplusplus/cplusplus-original.svg" width="60">](https://isocpp.org)
+[<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/cmake/cmake-original.svg" width="60">](https://cmake.org)
 
----
+[![Open in Visual Studio Code](https://img.shields.io/badge/Open%20in%20VS%20Code-007ACC?logo=visual-studio-code&logoColor=white)](https://vscode.dev/)
+[![Contributors](https://img.shields.io/github/contributors/lakshyajain-0291/RealmWeaver)](https://github.com/lakshyajain-0291/RealmWeaver/graphs/contributors)
+[![Forks](https://img.shields.io/github/forks/lakshyajain-0291/RealmWeaver?style=social)](https://github.com/lakshyajain-0291/RealmWeaver/network/members)
+[![Stars](https://img.shields.io/github/stars/lakshyajain-0291/RealmWeaver?style=social)](https://github.com/lakshyajain-0291/RealmWeaver/stargazers)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/lakshyajain-0291/RealmWeaver)
+[![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/lakshyajain-0291/RealmWeaver/blob/main/LICENSE)
 
-## Features
+*A Dynamic 2D Open-Ended Game with AI-Generated Content*
 
-- **Dynamic Content Generation**: Uses the GEMINI API to dynamically generate NPCs, quests, locations, stats, items, and rewards.
-- **Rank-Based System**: Ranks (1-10) are used for NPCs, quests, and items to adjust difficulty and rewards.
-- **World Map Structure**: The game world is stored as a map of interconnected locations, where each location may have parents, children, and siblings.
-- **Command System**: A centralized command handler for inputs like `$move`, `$interact`, `$quest`, etc., makes the game more interactive.
-- **Config System**: Essential configuration details (commands, API keys, etc.) are stored in a modifiable config file.
-- **Shortest Path and Pathfinding**: Implements shortest path algorithms for efficient player travel within the world.
-- **Minigames**: Integrated DSA-based minigames that adapt based on quest difficulty, adding a layer of challenge and engagement.
+[Features](#key-features) • [Installation](#installation) • [Commands](#commands) • [Contributing](#contribution)
 
----
+</div>
 
-## Commands
+## 🌟 Overview
 
-Below are the available commands you can use within the **RealmWeaver** game:
+**RealmWeaver** is a cutting-edge 2D open-ended game that revolutionizes interactive storytelling through dynamic content generation. Leveraging the GEMINI API, the game creates unique NPCs, quests, locations, and items, ensuring no two gameplay experiences are alike.
 
-### 🧭 Command: `npcs`
-💡 **Description**: Displays all the NPCs present at your current location.
+## 🚀 Key Features
 
-### 🛠️ Command: `modifyconfig`
-💡 **Description**: `modifyconfig <key> <value>` changes a configuration setting.
+- 🧙 **Dynamic Content Generation**: AI-powered world creation using GEMINI API
+- 🏆 **Rank-Based System**: Adaptive difficulty with NPCs, quests, and items ranked 1-10
+- 🗺️ **Interconnected World Map**: Complex location relationships and pathfinding
+- 🎮 **Interactive Command System**: Intuitive commands for seamless gameplay
+- 🧩 **DSA-Based Minigames**: Challenging, adaptive mini-challenges
+- ⚙️ **Flexible Configuration**: Easy game customization through config files
 
-### 🛠️ Command: `exit`
-💡 **Description**: Ends the game session.
+## 🌈 Why RealmWeaver?
 
-### 🛠️ Command: `status`
-💡 **Description**: Displays the player’s current stats and status.
+- **Unique Experience**: Every playthrough is a new adventure
+- **Intelligent Design**: Smart algorithms drive game mechanics
+- **Flexibility**: Easily extendable and configurable
+- **Educational**: Demonstrates advanced data structures and algorithms
+- **Immersive**: AI-generated content creates rich, dynamic narratives
 
-### 🎒 Command: `inventory`
-💡 **Description**: Displays the current contents of your inventory, including items.
+## 📋 Prerequisites
 
-### ❓ Command: `help`
-💡 **Description**: Displays available commands and their descriptions.
-
-### ⚙️ Command: `config`
-💡 **Description**: Shows the formatted configuration file.
-
-### 📜 Command: `allquests`
-💡 **Description**: Displays all of your ongoing quests.
-
-### 🏆 Command: `quest`
-💡 **Description**: Displays the current quest or accepts a new one.
-
-### 🗣️ Command: `interact`
-💡 **Description**: `interact <npc_name>` allows the player to interact with a specified NPC.
-
-### 🗺️ Command: `map`
-💡 **Description**: Shows all your nearby locations.
-
-### 🧥 Command: `equip`
-💡 **Description**: `equip <item_name>` equips an item from your inventory, if available.
-
-### 🛣️ Command: `move`
-💡 **Description**: `move <location_name>` moves the player to the desired location if it exists; otherwise, it creates it.
-
----
-
-## Project Structure
-
-Here is the detailed structure of the **RealmWeaver** project directory:
-
-```
-RealmWeaver/
-├── CMakeLists.txt              # CMake build configuration
-├── cmake/                      # CMake related files
-│   ├── CMakeCache.txt          # Cache file generated by CMake
-│   ├── CMakeFiles/             # Generated files by CMake
-│   └── Makefile                # Makefile to build the project
-├── src/                        # Source code for the game modules
-│   ├── core/                   # Core game engine files
-│   │   ├── GameEngine.cpp      # Engine functionality
-│   │   └── GameEngine.h        # Engine header
-│   ├── event/                  # Event management system
-│   │   ├── EventManager.cpp    # Event handling logic
-│   │   └── EventManager.h      # Event management header
-│   ├── gemini/                 # GEMINI API integration files
-│   │   ├── Gemini.cpp          # Gemini logic
-│   │   └── Gemini.h            # Gemini header
-│   ├── interactions/           # NPC interaction files
-│   │   ├── InteractionSystem.cpp # Interaction logic
-│   │   └── InteractionSystem.h   # Interaction header
-│   ├── inventory/              # Inventory management system
-│   │   ├── Inventory.cpp       # Inventory logic
-│   │   └── Inventory.h         # Inventory header
-│   ├── item/                   # Item management files
-│   │   ├── Item.cpp            # Item logic
-│   │   └── Item.h              # Item header
-│   ├── location/               # Location management files
-│   │   ├── Location.cpp        # Location management logic
-│   │   └── Location.h          # Location header
-│   ├── minigame/               # Minigame related files
-│   │   ├── Minigame.cpp        # Minigame logic
-│   │   └── Minigame.h          # Minigame header
-│   ├── npc/                    # NPC files
-│   │   ├── NPC.cpp             # NPC logic
-│   │   └── NPC.h               # NPC header
-│   ├── player/                 # Player management files
-│   │   ├── Player.cpp          # Player logic
-│   │   └── Player.h            # Player header
-│   ├── quest/                  # Quest management files
-│   │   ├── Quest.cpp           # Quest logic
-│   │   └── Quest.h             # Quest header
-│   └── stats/                  # Player stats files
-│       ├── Stats.cpp           # Stats logic
-│       └── Stats.h             # Stats header
-├── include/                    # Header files
-│   ├── config.h                # Configuration settings header
-│   └── other_headers.h         # Other essential headers
-├── config.json                 # Command and configuration settings
-├── .env                        # GEMINI API Key (created manually)
-├── LICENSE                     # Project license information
-└── README.md                   # Project documentation
-```
-
----
-
-## Installation and Setup
-
-To get started with **RealmWeaver**, follow these steps:
-
-### Prerequisites
-
-- C++ compiler (supports C++11 or higher)
-- CMake (version 3.1 or higher)
+- C++ compiler (C++11 or higher)
+- CMake (3.1 or higher)
 - GEMINI API Key
-- (Optional) Git for cloning the repository
+- Git (optional)
 
-### 1. Clone the Repository
+## 🔧 Installation
 
-First, clone the **RealmWeaver** repository:
+<details>
+<summary>Step-by-step guide</summary>
 
+1. Clone the repository:
 ```bash
 git clone https://github.com/lakshyajain-0291/RealmWeaver.git
-```
-
-### 2. Set Up the GEMINI API Key
-
-The game requires the GEMINI API for dynamic content generation. To provide the API key, create a `.env` file in the root directory of **RealmWeaver** with the following content:
-
-```plaintext
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-```
-
-Replace `YOUR_GEMINI_API_KEY` with your actual GEMINI API key.
-
-### 3. Build the Project
-
-Navigate to the project directory and create a build directory:
-
-```bash
 cd RealmWeaver
+```
+
+2. Set up GEMINI API Key:
+```bash
+# Create .env file
+echo "GEMINI_API_KEY=YOUR_API_KEY" > .env
+```
+
+3. Build the project:
+```bash
 mkdir build
 cd build
-```
-
-Run CMake to generate the Makefile, and then use `make` to build the project:
-
-```bash
 cmake ..
 make
 ```
 
-### 4. Run the Game
-
-Once compiled, you can run the **RealmWeaver** executable:
-
+4. Run the game:
 ```bash
 ./RealmWeaver
 ```
+</details>
 
----
+## 🎮 Available Commands
 
-## Contribution
+- `npcs`: List NPCs at current location
+- `modifyconfig`: Change game configuration
+- `exit`: End game session
+- `status`: View player stats
+- `inventory`: Check item collection
+- `help`: Show available commands
+- `quest`: Manage quests
+- `interact`: Engage with NPCs
+- `move`: Travel between locations
+- And more!
 
-Contributions are welcome! If you'd like to improve **RealmWeaver**, please fork the repository and submit a pull request. For major changes, open an issue to discuss your ideas first.
+## 🔑 Example Workflow
 
----
+1. Start the game
+2. Use `help` to explore commands
+3. `move` to different locations
+4. `interact` with NPCs
+5. Accept and complete quests
+6. Manage your `inventory`
+7. Customize game with `modifyconfig`
 
-## License
+## 🤝 Contributing
 
-**RealmWeaver** is released under the MIT License. See `LICENSE` for more information.
+Contributions are welcome! Here's how you can help:
 
----
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/NewGameplay`)
+3. Commit your changes (`git commit -m 'Add new dynamic quest system'`)
+4. Push to the branch (`git push origin feature/NewGameplay`)
+5. Open a Pull Request
 
-Happy gaming! 🎮
+## 📜 License
+
+RealmWeaver is open-source, released under the MIT License. See `LICENSE` for details.
+
+## 🙏 Acknowledgments
+
+- GEMINI API for dynamic content generation
+- Data Structures and Algorithms course for inspiration
+- Open-source community
+
+**Happy adventuring!** 🎲🌍
