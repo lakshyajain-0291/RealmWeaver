@@ -36,157 +36,271 @@ int Gemini::WriteCallBack(void* contents, int size, int nmemb, void* userp)
 
 json Gemini::sendGeminiReq(const string &prompt)
 {
-    CURL* curl;
-    CURLcode res;
-    string readBuffer;
+    // Three API keys; initially, all are the same.
+    vector<string> apiKeys = {
+        "AIzaSyCFvaakADA4GLAF8NbtWmdQm-OA_F-qrtQ",
+        "AIzaSyCFuOzrXYStJBD8ExnY3uP3T1kakFVB5VI"};
 
-    curl= curl_easy_init();
-    if(curl)
+    // Static index to remember last-used API key index for round robin
+    static int keyIndex = 0;
+    json jsonResp;
+    bool success = false;
+
+    // Attempt each API key in round-robin order
+    for (int i = 0; i < apiKeys.size(); i++)
     {
-        struct curl_slist* headers = nullptr;
-        headers=curl_slist_append(headers,"Content-Type: application/json");
-        // headers=curl_slist_append(headers,"Authorization: Bearer ${api}");
+        // Determine the current key index based on the static round-robin index.
+        int currentKeyIndex = (keyIndex + i) % apiKeys.size();
+        string currentKey = apiKeys[currentKeyIndex];
+        // Build the URL using the current API key.
+        string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + currentKey;
 
-        string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + apiKey;
+        CURL *curl = curl_easy_init();
+        if (curl)
+        {
+            string readBuffer;
+            struct curl_slist *headers = nullptr;
+            headers = curl_slist_append(headers, "Content-Type: application/json");
 
-        curl_easy_setopt(curl,CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl,CURLOPT_HTTPHEADER, headers);
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-        json jsonPayload = {
-            {"contents", {{{"parts", {{{"text", prompt}}}}}}}
-        };
+            // Prepare the JSON payload.
+            json jsonPayload = {
+                {"contents", {{{"parts", {{{"text", prompt}}}}}}}};
 
-        string jsonString =jsonPayload.dump();
+            string jsonString = jsonPayload.dump();
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonString.c_str());
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallBack);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonString.c_str());
-
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallBack);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-        res=curl_easy_perform(curl);
-        if (res != CURLE_OK) {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+            // Perform the request.
+            CURLcode res = curl_easy_perform(curl);
+            if (res == CURLE_OK)
+            {
+                // Successful call. Parse the response.
+                try
+                {
+                    jsonResp = json::parse(readBuffer);
+                   // cout << jsonResp.dump(4) << endl; // Print the response for debugging
+                }
+                catch (json::parse_error &e)
+                {
+                    std::cerr << "JSON parse error: " << e.what() << std::endl;
+                    // Cleanup and try the next API key.
+                }
+                // Update round-robin index to the next key after the one that worked.
+                keyIndex = (currentKeyIndex + 1) % apiKeys.size();
+                success = true;
+                curl_easy_cleanup(curl);
+                curl_slist_free_all(headers);
+                break; // Exit the loop; we got a valid response.
+            }
+            else
+            {
+                std::cerr << "API request failed with key " << currentKey
+                          << ": " << curl_easy_strerror(res) << std::endl;
+            }
+            curl_easy_cleanup(curl);
+            curl_slist_free_all(headers);
+          //  cout << "url: " << url << endl;
         }
 
-        curl_easy_cleanup(curl);
-        curl_slist_free_all(headers);
+        i == apiKeys.size() - 1 ? keyIndex = 0 : keyIndex;
     }
 
-    json jsonResp = json::parse(readBuffer);
+    if (!success)
+    {
+        std::cerr << "All API key attempts failed." << std::endl;
+        // Depending on your needs, throw an exception or handle the error accordingly.
+    }
+
     return jsonResp;
 }
 
 json Gemini::sendBatchGeminiReq(const vector<string> &prompts)
 {
-    CURL* curl;
-    CURLcode res;
-    string readBuffer;
+    // Three API keys; initially, all are the same.
 
-    curl= curl_easy_init();
-    if(curl)
+    vector<string> apiKeys = {
+        "AIzaSyCFvaakADA4GLAF8NbtWmdQm-OA_F-qrtQ",
+        "AIzaSyCFuOzrXYStJBD8ExnY3uP3T1kakFVB5VI"};
+
+
+    // Static index to remember the last used API key.
+    static int keyIndex = 0;
+    json jsonResp;
+    bool success = false;
+
+    // Loop through all API keys in a round-robin manner.
+    for (size_t i = 0; i < apiKeys.size(); i++)
     {
-        struct curl_slist* headers = nullptr;
-        headers=curl_slist_append(headers,"Content-Type: application/json");
-        // headers=curl_slist_append(headers,"Authorization: Bearer ${api}");
-
-        string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + apiKey;
-
-        curl_easy_setopt(curl,CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl,CURLOPT_HTTPHEADER, headers);
-
-        json jsonPayload = 
-        {
-            {"contents",{}}
-        };
+        int currentKeyIndex = (keyIndex + i) % apiKeys.size();
+        string currentKey = apiKeys[currentKeyIndex];
         
-        
-        for(const auto& prompt: prompts)
+        string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + currentKey;
+
+        CURL *curl = curl_easy_init();
+        if (curl)
         {
-            jsonPayload["contents"].push_back({{"parts",{{{"text",prompt}}}}});   
+            string readBuffer;
+            struct curl_slist *headers = nullptr;
+            headers = curl_slist_append(headers, "Content-Type: application/json");
+
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+            // Build payload.
+            json jsonPayload = {{"contents", json::array()}};
+            for (const auto &prompt : prompts)
+            {
+                jsonPayload["contents"].push_back({{"parts", {{{"text", prompt}}}}});
+            }
+            string jsonString = jsonPayload.dump();
+
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonString.c_str());
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallBack);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+            CURLcode res = curl_easy_perform(curl);
+            if (res == CURLE_OK)
+            {
+                try
+                {
+                    jsonResp = json::parse(readBuffer);
+
+                 //   cout << jsonResp.dump(4) << endl; // Print the response for debugging
+                }
+                catch (json::parse_error &e)
+                {
+                    std::cerr << "JSON parse error: " << e.what() << std::endl;
+                    // Cleanup and continue to try the next key.
+                }
+                // Update round-robin index to the next key after the successful one.
+                keyIndex = (currentKeyIndex + 1) % apiKeys.size();
+                success = true;
+                curl_easy_cleanup(curl);
+                curl_slist_free_all(headers);
+                break;
+            }
+            else
+            {
+                std::cerr << "API request failed with key " << currentKey
+                          << ": " << curl_easy_strerror(res) << std::endl;
+            }
+         //
+         //   cout << "url: " << url << endl;
+            curl_easy_cleanup(curl);
+            curl_slist_free_all(headers);
         }
 
-        string jsonString =jsonPayload.dump();
-
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonString.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallBack);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-        res=curl_easy_perform(curl);
-        if (res != CURLE_OK) {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-        }
-
-        curl_easy_cleanup(curl);
-        curl_slist_free_all(headers);
+        i == apiKeys.size() - 1 ? keyIndex = 0 : keyIndex;
     }
 
-    json jsonResp = json::parse(readBuffer);
+    if (!success)
+    {
+        std::cerr << "All API key attempts failed." << std::endl;
+        // Handle error appropriately, e.g., by throwing an exception or returning an error json.
+    }
+
     return jsonResp;
 }
 
 json Gemini::sendGeminiReq(const string &promptFilePath, const string &prompt)
 {
+    // Read and parse the JSON file containing the prompt payload.
     json jsonPayload;
     ifstream file(promptFilePath);
-
-    if(!file.is_open())
+    if (!file.is_open())
     {
-        throw runtime_error("Could not open the file : "+promptFilePath);
+        throw runtime_error("Could not open the file : " + promptFilePath);
     }
-
     file >> jsonPayload;
-
     file.close();
-    
-    json jsonPrompt=
-    {
-        {"role","user"},
-        {"parts", {
-            {
-                {"text",prompt}
-            }
-        }}
 
-    };
+    // Create the user prompt JSON structure.
+    json jsonPrompt = {
+        {"role", "user"},
+        {"parts", {{{"text", prompt}}}}};
 
+    // Append the user prompt JSON object into the payload.
     jsonPayload["contents"].push_back(jsonPrompt);
 
-    CURL* curl;
-    CURLcode res;
-    string readBuffer;
+    // Define three API keys (initially all the same, but can be distinct).
 
+    vector<string> apiKeys = {
+        "AIzaSyCFvaakADA4GLAF8NbtWmdQm-OA_F-qrtQ",
+        "AIzaSyCFuOzrXYStJBD8ExnY3uP3T1kakFVB5VI"};
 
-    curl= curl_easy_init();
-    if(curl)
+    // Static variable to keep track of the last API key used.
+    static int keyIndex = 0;
+    json jsonResp;
+    bool success = false;
+
+    // Try each API key in round-robin fashion.
+    for (size_t i = 0; i < apiKeys.size(); i++)
     {
-        struct curl_slist* headers = nullptr;
-        headers=curl_slist_append(headers,"Content-Type: application/json");
-        // headers=curl_slist_append(headers,"Authorization: Bearer ${api}");
 
-        string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyBNRAo4aMQvwIhYbcNI_Bzp4Sicbxj49Ls";
+        int currentKeyIndex = (keyIndex + i) % apiKeys.size();
+        string currentKey = apiKeys[currentKeyIndex];
+        string url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + currentKey;
 
-        curl_easy_setopt(curl,CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl,CURLOPT_HTTPHEADER, headers);
+        CURL *curl = curl_easy_init();
+        if (curl)
+        {
+            string readBuffer;
+            struct curl_slist *headers = nullptr;
+            headers = curl_slist_append(headers, "Content-Type: application/json");
 
-        string jsonString =jsonPayload.dump();
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonString.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallBack);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+            // Dump the JSON payload into a string.
+            string jsonString = jsonPayload.dump();
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonString.c_str());
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallBack);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 
-        // cout<<apiKey<<endl;
-        // string jsonString1 = jsonPayload.dump(4); // 4 spaces for indentation
-        // cout << "Formatted Payload: " << jsonString1 << std::endl;        
-        res=curl_easy_perform(curl);
-        if (res != CURLE_OK) {
-            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+            // Perform the HTTP request.
+            CURLcode res = curl_easy_perform(curl);
+            if (res == CURLE_OK)
+            {
+                try
+                {
+                    jsonResp = json::parse(readBuffer);
+                //    cout << jsonResp.dump(4) << endl; // Print the response for debugging
+                }
+                catch (json::parse_error &e)
+                {
+                    std::cerr << "JSON parse error: " << e.what() << std::endl;
+                    // Cleanup and continue to try the next key.
+                }
+                // Update the round-robin index to the next key after the one that succeeded.
+                keyIndex = (currentKeyIndex + 1) % apiKeys.size();
+                success = true;
+                curl_easy_cleanup(curl);
+                curl_slist_free_all(headers);
+                break; // Exit loop on successful response.
+            }
+            else
+            {
+                std::cerr << "API request failed with key " << currentKey
+                          << ": " << curl_easy_strerror(res) << std::endl;
+            }
+            curl_easy_cleanup(curl);
+            curl_slist_free_all(headers);
+
+         //   cout << "url: " << url << endl;
         }
-
-        curl_easy_cleanup(curl);
-        curl_slist_free_all(headers);
+        i==apiKeys.size()-1 ? keyIndex=0 : keyIndex;
     }
 
-    json jsonResp = json::parse(readBuffer);
+    if (!success)
+    {
+        std::cerr << "All API key attempts failed." << std::endl;
+        // Handle the error appropriately (e.g., throw exception, return error JSON, etc.)
+    }
+
     return jsonResp;
 }
 
@@ -222,31 +336,87 @@ json Gemini::isRespCorrect(const json& resp, const json& def)
         return def;
 }
 
-// json should not be empty -- for any null value send a defualt json
 future<json> Gemini::genStatsForTheme()
 {
     return async(launch::async, [this]()
     {
-        json defaultResp ={
+        json defaultResp = {
             { "attributes", {
-                {{ "health", 100 }}, 
-                {{ "strength", 5 }}, 
-                {{ "agility", 5 }}, 
-                {{ "willpower", 5 }}, 
-                {{ "defence", 5 } }
-            } }
+                {{ "health", 100 }},
+                {{ "strength", 5 }},
+                {{ "agility", 5 }},
+                {{ "willpower", 5 }},
+                {{ "defence", 5 }}
+            }}
         };
-        // cout<<defaultJson;
+
         string prompt = "Based on the provided JSON structure, can you return the attributes for an "+theme+"-themed game?";
-        json jsonResp=this->sendGeminiReq("../json/stats.json",prompt);
 
-        // cout<<jsonResp;
+        try
+        {
+            json jsonResp = this->sendGeminiReq("../json/stats.json", prompt);
+            json final    = isRespCorrect(jsonResp, defaultResp);
 
-        json final=isRespCorrect(jsonResp,defaultResp);
-
-        return final;
+            // Validate that each attribute is an object mapping to an integer
+            bool valid = final.contains("attributes")
+                         && final["attributes"].is_array();
+            if (valid)
+            {
+                for (auto &attr : final["attributes"])
+                {
+                    if (!attr.is_object() || attr.size() != 1)
+                    {
+                        valid = false;
+                        break;
+                    }
+                    auto it = attr.begin();
+                    if (!it.value().is_number_integer())
+                    {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+            if (!valid) return defaultResp;
+            return final;
+        }
+        catch (const nlohmann::json::type_error& e)
+        {
+            std::cerr << "JSON Type Error in genStatsForTheme: " << e.what() << std::endl;
+            return defaultResp;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Error in genStatsForTheme: " << e.what() << std::endl;
+            return defaultResp;
+        }
     });
 }
+// // json should not be empty -- for any null value send a defualt json
+// future<json> Gemini::genStatsForTheme()
+// {
+//     return async(launch::async, [this]()
+//     {
+//         json defaultResp ={
+//             { "attributes", {
+//                 {{ "health", 100 }}, 
+//                 {{ "strength", 5 }}, 
+//                 {{ "agility", 5 }}, 
+//                 {{ "willpower", 5 }}, 
+//                 {{ "defence", 5 } }
+//             } }
+//         };
+//         // cout<<defaultJson;
+//         string prompt = "Based on the provided JSON structure, can you return the attributes for an "+theme+"-themed game?";
+//         json jsonResp=this->sendGeminiReq("../json/stats.json",prompt);
+
+//         // cout<<jsonResp;
+
+//         json final=isRespCorrect(jsonResp,defaultResp);
+
+//         return final;
+//     });
+// }
 
 future<json> Gemini::genNPC(const int& rank,const string &locName, const string &locDesc)
 {
